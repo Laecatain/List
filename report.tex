@@ -1,0 +1,140 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{geometry, CJKutf8}
+\geometry{margin=1.5cm, vmargin={0pt,1cm}}
+\setlength{\topmargin}{-1cm}
+\setlength{\paperheight}{29.7cm}
+\setlength{\textheight}{25.3cm}
+
+% useful packages.
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{layout}
+\usepackage{listings}
+\usepackage{float, caption}
+
+\lstset{
+    basicstyle=\ttfamily, basewidth=0.5em
+}
+
+% some common command
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\difFrac}[2]{\frac{\dif #1}{\dif #2}}
+\newcommand{\pdfFrac}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\OFL}{\mathrm{OFL}}
+\newcommand{\UFL}{\mathrm{UFL}}
+\newcommand{\fl}{\mathrm{fl}}
+\newcommand{\op}{\odot}
+\newcommand{\Eabs}{E_{\mathrm{abs}}}
+\newcommand{\Erel}{E_{\mathrm{rel}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\fancyhead{}
+\lhead{陈俊翰, 学号3230102940}
+\chead{数据结构与算法第四次作业}
+\rhead{2024年10月17日}
+
+\section{测试程序的设计思路}
+
+在设计 `List.cpp` 中的测试时，我采取了以下步骤：
+
+首先，创建了一个空的链表对象 `List<int> lst`。接着，我试图在一个空列表上调用 `front()` 和 `back()` 方法。
+
+然后，我向列表中添加了多个整数元素，并测试了 `push\_back()` 方法的功能。在添加元素之后，我调用了 `pop\_back()` 方法来移除列表的最后一个元素，并检查了列表的状态是否符合预期。
+
+我还测试了迭代器的前后置自增和自减操作，以确保迭代器能够在列表中正确地移动。此外，我还测试了构造函数和移动语义，以验证列表对象在初始化和移动时的行为。
+
+接着，我使用 `find()` 方法查找列表中的特定元素和不存在元素，并尝试删除列表中不存在的元素。之后，我尝试使用已删除元素的迭代器。
+
+最后，我使用了 `erase()` 方法来删除列表中的元素，并验证了删除操作是否正确地更新了列表的状态。
+
+
+\section{测试的结果}
+
+测试结果：
+
+1. 当列表为空时，尝试调用 `front()` 和 `back()` 方法，输出如下：
+\begin{verbatim}
+First element of empty list: 0
+Last element of empty list: 0
+\end{verbatim}
+
+2. 向列表中添加了 10 个元素，并随后调用了 `pop\_back()` 方法删除了最后一个元素，输出如下：
+\begin{verbatim}
+Elements after adding 10 elements:
+0 1 2 3 4 5 6 7 8 9 
+Elements after popping last element:
+0 1 2 3 4 5 6 7 8
+\end{verbatim}
+
+3. 测试了迭代器的前后置自增和自减操作，迭代器能够在列表中正确地移动，输出如下：
+\begin{verbatim}
+Element before end: 8 
+\end{verbatim}
+
+4. 使用构造函数初始化了一个列表，并通过移动语义将其移动到另一个列表中，输出如下：
+\begin{verbatim}
+Initialized list: 1 2 3 4 5 
+Moved list: 1 2 3 4 5 
+Moved assigned list: 1 2 3 4 5 
+\end{verbatim}
+
+5. 测试了 `find()` 方法的功能，输出如下：
+\begin{verbatim}
+Found element 5 at index: 5
+Element -1 not found.
+\end{verbatim}
+
+6。删除不存在的元素，并使用已删除元素的迭代器，输出如下：
+\begin{verbatim}
+Element 15 not found in the list.
+Value at deleted iterator: 20641678
+\end{verbatim}
+
+7. 使用 `erase()` 方法删除了列表中的元素，验证了删除操作是否正确地更新了列表的状态，输出如下：
+\begin{verbatim}
+list after being erased:
+0 2 3 4 5 6 7 
+\end{verbatim}
+
+此外，我还使用 `valgrind` 工具对程序进行了内存泄漏检测，结果显示没有内存泄漏的问题。
+
+\section{（可选）bug报告}
+
+我发现了一个 bug，触发条件如下：
+
+\begin{enumerate}  
+    \item 首先，创建一个空的双向链表 `List<int> lst`。  
+    \item 然后，尝试调用 `lst.front()` 和 `lst.back()` 方法。  
+    \item 此时发现，程序返回了默认构造的 `int` 值 `0`，而不是抛出异常或返回特定的错误指示。  
+\end{enumerate}  
+
+我发现了另一个 bug，触发条件如下：
+
+\begin{enumerate}  
+    \item 创建一个迭代器 \texttt{List<int>::iterator it2 = lst.begin()}。
+    \item 将迭代器 \texttt{it2} 向前移动一位 \texttt{++it2}。
+    \item 调用 \texttt{lst.erase(it2)} 删除迭代器指向的元素。
+    \item 尝试访问已删除元素的迭代器 \texttt{*it2}。
+    \item 此时发现，尝试访问已删除元素的迭代器 \texttt{*it2} 导致了未定义行为。
+\end{enumerate}  
+
+据我分析，它们出现的原因是：
+
+\begin{enumerate}
+    \item 访问空列表的 `front()` 和 `back()` 方法时，程序没有抛出异常或返回特定的错误指示，而是返回了默认构造的 `int` 值 `0`。这可能导致后续逻辑处理时产生误解。
+    
+    \item 在删除元素后，迭代器没有正确更新，导致后续操作使用了无效的迭代器。具体来说，在删除元素后，迭代器 `it2` 仍然指向已被删除的位置，因此访问 `*it2` 导致了未定义行为。
+
+\end{enumerate}
+
+\end{document}
+
